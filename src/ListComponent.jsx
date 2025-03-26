@@ -12,7 +12,7 @@ const ListComponent = ({ list, setList, handleCheck }) => {
               checked={list[item]}
               onChange={() => handleCheck(item, list, setList)}
             ></input>
-            <label htmlFor={item}>{item}</label>
+            <label className="px-4" htmlFor={item}>{item}</label>
           </div>
         );
       })}
