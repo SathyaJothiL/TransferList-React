@@ -1,11 +1,42 @@
-import React from 'react'
+import React from "react";
 
-const Button = ({buttonName,onClickFunc,cls}) => {
-    return(
-        <div className=' flex justify-center items-center'>
-          <button className={`${cls} px-4 py-2 border-[1px] border-black w-10` }  onClick={()=>onClickFunc(buttonName)}>{buttonName}</button>
-        </div>
-      )
-}
+const Button = ({
+  enableButtonAll,
+  enableButton,
+  shiftLeftRight,
+  shiftRightAll,
+  shiftLeftAll,
+  rightList,
+  setRightList,
+  leftList,
+  setLeftList,
+}) => {
+  return (
+    <div className="flex flex-col gap-4">
+      <button disabled={enableButtonAll(rightList)} onClick={shiftLeftAll}>
+        {"<<"}
+      </button>
+      <button
+        disabled={enableButton(rightList)}
+        onClick={() =>
+          shiftLeftRight(rightList, setRightList, leftList, setLeftList)
+        }
+      >
+        {"<"}
+      </button>
+      <button
+        disabled={enableButton(leftList)}
+        onClick={() =>
+          shiftLeftRight(leftList, setLeftList, rightList, setRightList)
+        }
+      >
+        {">"}
+      </button>
+      <button disabled={enableButtonAll(leftList)} onClick={shiftRightAll}>
+        {">>"}
+      </button>
+    </div>
+  );
+};
 
-export default Button
+export default Button;

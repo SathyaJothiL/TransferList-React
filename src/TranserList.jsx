@@ -1,174 +1,123 @@
-import React from 'react'
-import Button from './Button'
-import LeftComponent from './LeftComponent'
-import RightComponent from './RightComponent'
-import { useState,useEffect } from 'react'
+import React, { useState } from "react";
+import Button from "./Button.jsx";
+import ListComponent from "./ListComponent.jsx";
 
 const TranserList = () => {
-    let leftList = [0,1,2,3]
-let rightList = [4,5,6,7]
-const buttonList = [
-    '>>','>','<','<<'
-  ]
-  const inputList = [
-    'Java','HTML','CSS','TS','React','Angular','Vue','Svelte'
-  ]
-const [leftState,setLeftState] = useState(leftList)
-const [rightState,setRightState] = useState(rightList)
-const [checkedState,setCheckedState] =useState([])
-function handleEvent(e,value){
-  let checkedArray = [...checkedState] 
-  console.log(value,'value');
-  if(checkedArray.includes(value)){
-    console.log('yes');
-    let newChecked = checkedArray.filter(item=>item!==value)
-    setCheckedState(newChecked)
-  }else{
-    checkedArray.push(value)
-    setCheckedState(checkedArray)
+  const [leftList, setLeftList] = useState({
+    Java: false,
+    HTML: false,
+    CSS: false,
+    TS: false,
+  });
+  const [rightList, setRightList] = useState({
+    React: false,
+    Angular: false,
+    Vue: false,
+    Svelte: false,
+  });
+  function shiftLeftAll() {
+    console.log("left");
+
+    setLeftList((prev) => {
+      return { ...prev, ...rightList };
+    });
+
+    setRightList((prev) => {
+      return {};
+    });
   }
-}
-
-function changeAllLeft(leftState,rightState){
-  let newleftState = [...leftState]
-  let newrightState
-  
-  if(newleftState.length===0){
-    console.log("No items in left");
-    return
+  function shiftRightAll() {
+    setRightList((prev) => {
+      return { ...prev, ...leftList };
+    });
+    setLeftList((prev) => {
+      return {};
+    });
   }
-
-  newrightState = [...rightState]
-
-  setRightState(newrightState.concat(newleftState))
-  setLeftState([])
-}
-function changeAllRight(leftState,rightState){
-  let newrightState = [...rightState]
-  let newleftState
-  
-  if(newrightState.length===0){
-    console.log("No items in right");
-    return
+  function handleCheck(item, list, setList) {
+    console.log(item, " clicked");
+    setList((prev) => {
+      return { ...prev, [item]: !list[item] };
+    });
+    console.log(list);
   }
+  function shiftLeftRight(fromList, setFromList, toList, setToList) {
+    let filterChecked = Object.keys(fromList).filter(
+      (item) => fromList[item] === true
+    );
+    let filterUnChecked = Object.keys(fromList).filter(
+      (item) => fromList[item] === false
+    );
+    let mapFiltered = filterChecked.map((key) => {
+      let temp = [];
+      temp.push(key, false);
+      return temp;
+    });
+    let mapUnFiltered = filterUnChecked.map((key) => {
+      let temp = [];
+      temp.push(key, false);
+      return temp;
+    });
+    let checkedItems = Object.fromEntries(mapFiltered);
+    let UnCheckedItems = Object.fromEntries(mapUnFiltered);
 
-  newleftState = [...leftState]
-
-  setRightState([])
-  setLeftState(newleftState.concat(newrightState))
-}
-
-function onClickFunc(buttonName){
-  if(buttonName==='>>'){
-    console.log(checkedState,'buttons');
-    changeAllLeft(leftState,rightState)
+    setToList((prev) => {
+      return { ...prev, ...checkedItems };
+    });
+    setFromList((prev) => {
+      return { ...UnCheckedItems };
+    });
+    console.log(checkedItems, "checked");
+    console.log(UnCheckedItems, "unchecled");
   }
-  if(buttonName==='<<'){
-    console.log(checkedState,'buttons');
-    changeAllRight(leftState,rightState)
-  }
-  if(buttonName==='>'){
-    console.log(checkedState,'checkers');
-    changeLeft(leftState,rightState,checkedState)
-  }
-  if(buttonName==='<'){
-    console.log(checkedState,'checkers');
-    changeRight(leftState,rightState,checkedState)
-  }
-}
-
-function changeLeft(leftState,rightState){
-  console.log(checkedState);
-  if(leftState.length===0){
-    console.log("No rows in left");
-    return
-  }
-  let newLeftState = [...leftState]
-  let newRightState = [...rightState]
-  let newCheckedState = [...checkedState]
-  let filerChecked = newLeftState.filter(item=>newCheckedState.includes(item))
-  if(filerChecked.length===0){
-    console.log("No rows in left checked");
-    return
-  }
-  let filterUnchecked = newLeftState.filter(item=>!newCheckedState.includes(item))
-
-  setLeftState(filterUnchecked)
-  setRightState(newRightState.concat(filerChecked))
-}
-
-function changeRight(){
-  console.log(checkedState);
-  if(rightState.length===0){
-    console.log("No rows in right");
-    return
-  }
-  let newLeftState = [...leftState]
-  let newRightState = [...rightState]
-  let newCheckedState = [...checkedState]
-  let filerChecked = newRightState.filter(item=>newCheckedState.includes(item))
-  if(filerChecked.length===0){
-    console.log("No rows in right checked");
-    return
-  }
-  let filterUnchecked = newRightState.filter(item=>!newCheckedState.includes(item))
-
-  setLeftState(newLeftState.concat(filerChecked))
-  setRightState(filterUnchecked)
-}
-
-function getButtonClass(index){
-
-  if(index===0){
-    if(leftState.length>0){
-      return ' bg-gray-500'
-    }else{
-      return ' bg-gray-300'
+  function enableButton(list) {
+    let findOne = Object.keys(list).find((item) => list[item] === true);
+    if (findOne) {
+      return false;
     }
+    return true;
   }
-  if(index===3){
-    if(rightState.length>0){
-      return ' bg-gray-500'
-    }else{
-      return ' bg-gray-300'
+  function enableButtonAll(list) {
+    let len = Object.keys(list).length;
+    if (len === 0) {
+      return true;
     }
+    return false;
   }
-  if(index===1){
-    console.log(checkedState);
-    let leftChecked = checkedState.filter(item=>leftState.includes(item))
-    if(leftChecked>0){
-      return ' bg-gray-500'
-    }else{
-      return ' bg-gray-300'
-    }
-  }
-  if(index===2){
-    console.log(checkedState);
-    let rightChecked = checkedState.filter(item=>rightState.includes(item))
-    if(rightChecked>0){
-      return ' bg-gray-500'
-    }else{
-      return ' bg-gray-300'
-    }
-  }
-}
 
-return(
+  return (
+    <div className="flex justify-center mt-12 w-full">
+      <div className="flex flex-col gap-8  border border-black w-1/3">
+        <ListComponent
+          list={leftList}
+          setList={setLeftList}
+          handleCheck={handleCheck}
+        />
+      </div>
 
-    <>  
-    <div>
-      <div className='flex flex-row justify-center items-center m-12'>
-        <LeftComponent handleEvent={handleEvent} rightState={rightState} leftState={leftState} setCheckedState={setCheckedState} inputList={inputList} />
-          <div className='flex flex-col justify-center items-center h-[300px] gap-4 w-1/5 border-black border-t-[1px] border-b-[1px]'>
-            {
-              buttonList.map((buttonName,index)=><Button id={index+1} key={index+1} buttonName={buttonName} checkedState={checkedState}  onClickFunc={onClickFunc} cls={getButtonClass(index)} />)
-            }
-          </div>
-          <RightComponent handleEvent={handleEvent} rightState={rightState} leftState={leftState} setCheckedState={setCheckedState} inputList={inputList}/>
+      <div className=" border-black border-b border-t p-4 flex">
+        <Button
+          enableButtonAll={enableButtonAll}
+          enableButton={enableButton}
+          shiftLeftRight={shiftLeftRight}
+          shiftRightAll={shiftRightAll}
+          shiftLeftAll={shiftLeftAll}
+          rightList={rightList}
+          setRightList={setRightList}
+          leftList={leftList}
+          setLeftList={setLeftList}
+        />
+      </div>
+
+      <div className="flex flex-col gap-8 w-1/3  border border-black ">
+        <ListComponent
+          list={rightList}
+          setList={setRightList}
+          handleCheck={handleCheck}
+        />
       </div>
     </div>
-    </>
-  )
-}
+  );
+};
 
-export default TranserList
+export default TranserList;
